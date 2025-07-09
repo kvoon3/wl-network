@@ -30,7 +30,7 @@ export class WeilaApi {
     }
     this.v2 = {
       fetch: createFetch({options: v2Options, ...options }),
-      request: { options: v2Options, ...options }
+      request: createRequest({ options: v2Options, ...options })
     }
   }
 
