@@ -38,9 +38,9 @@ export class WeilaApi {
     const data = await this.fetch(url, { body })
 
     if (data) {
-      this.token = data.access_token || 0
-      this.refresh_token = data.refresh_token
-      this.expires_in = data.expires_in || -1
+      this.token.value = data.access_token || 0
+      this.refresh_token.value = data.refresh_token
+      this.expires_in.value = data.expires_in || -1
     }
 
     this.loginTime = Date.now()
@@ -49,23 +49,26 @@ export class WeilaApi {
   }
 
   clear() {
-    this.token = ''
-    this.refresh_token = ''
-    this.expires_in = ''
+    this.token.value = ''
+    this.refresh_token.value = ''
+    this.expires_in.value = ''
   }
 }
 
-function $local(key: string, encodeKey?: string) {
-  const target = {}
+function $local<T>(key: string, encodeKey?: string) {
+  const target: { value: T | undefined } = {
+    value: undefined
+  }
+
   return new Proxy(target, {
     get() {
       let value = localStorage.getItem(key) || ''
       if(encodeKey)
         value = CryptoJS.AES.encrypt(value, encodeKey).toString() || ''
 
-      return
+      return value
     },
-    set(_, __, ___, value: string) {
+    set(_, __, value: string) {
       if(encodeKey)
         value = CryptoJS.AES.encrypt(value, encodeKey).toString()
 
