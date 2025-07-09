@@ -3,7 +3,7 @@ import md5 from 'md5'
 const app_id = '102036'
 const key = 'b3c658bd2e637c65efb134fb381d4a18'
 
-export function getOptionsV1() {
+export function v1Options() {
   const access_token = localStorage.getItem('token') || ''
   const timestamp = Date.now() || -1
   const et = Math.floor(timestamp / 1000)
@@ -17,7 +17,7 @@ export function getOptionsV1() {
   }
 }
 
-export function getOptionsV2() {
+export function v2Options() {
   const access_token = localStorage.getItem('token') || ''
   const timestamp = Date.now() || -1
   const et = Math.floor(timestamp / 1000)
