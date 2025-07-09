@@ -134,5 +134,5 @@ function pickWeilaData(weilaRes: WeilaRes) {
       return weilaRes.data?.[keys[0]]
   }
 
-  return weilaRes
+  return weilaRes.data
 }
