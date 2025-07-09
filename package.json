@@ -1,7 +1,7 @@
 {
   "name": "@weila/network",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "packageManager": "pnpm@10.12.4",
   "description": "",
   "author": "",
@@ -23,7 +23,8 @@
     "typecheck": "tsc --noEmit",
     "up": "npx taze -I major",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "release": "npx bumpp && npm publish"
   },
   "peerDependencies": {
     "axios": "^1.10.0",
@@ -36,6 +37,7 @@
     "@antfu/utils": "^9.2.0",
     "@types/md5": "^2.3.5",
     "axios": "^1.10.0",
+    "bumpp": "^10.2.0",
     "eslint": "^9.30.1",
     "lint-staged": "^16.1.2",
     "md5": "^2.3.0",
