@@ -55,24 +55,26 @@ export class WeilaApi {
   }
 }
 
-function $local<T>(key: string, encodeKey?: string) {
-  const target: { value: T | undefined } = {
+function $local(key: string, encodeKey?: string) {
+  const target: { value: string | undefined } = {
     value: undefined
   }
 
   return new Proxy(target, {
-    get() {
+    get(target) {
       let value = localStorage.getItem(key) || ''
       if(encodeKey)
         value = CryptoJS.AES.encrypt(value, encodeKey).toString() || ''
 
-      return value
+      return target.value
     },
-    set(_, __, value: string) {
+    set(target, __, value: string) {
       if(encodeKey)
         value = CryptoJS.AES.encrypt(value, encodeKey).toString()
 
-      localStorage.setItem('key', value)
+      localStorage.setItem(key, value)
+
+      target.value = value
       return true
     }
   })
