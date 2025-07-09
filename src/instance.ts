@@ -66,6 +66,9 @@ function $local(key: string, encodeKey?: string) {
       if(encodeKey)
         value = CryptoJS.AES.encrypt(value, encodeKey).toString() || ''
 
+      if(!target.value)
+        target.value = value
+
       return target.value
     },
     set(target, __, value: string) {
