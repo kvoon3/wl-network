@@ -6,7 +6,9 @@ import { pickWeilaData } from '../shared'
 export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstance {
   const {
     baseURL = '/v1',
-    onError,
+    onStart = noop,
+    onDone = noop,
+    onError = noop,
     onLogout = noop,
     options = () => ({}),
   } = opts || {}
@@ -22,6 +24,7 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
 
   request.interceptors.request.use(
     (config) => {
+      onStart()
       if (config) {
         config.params = {
           ...config.params,
@@ -31,6 +34,7 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
       return config
     },
     (error) => {
+      onDone()
       onError?.(error)
       console.error('reqError', error)
     },
@@ -39,6 +43,7 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
   request.interceptors.response.use(
     // @ts-expect-error type error
     (response: AxiosResponse<WeilaRes>) => {
+      onDone()
       const { errcode, code } = response.data as WeilaRes
 
       if (errcode === WeilaErrorCode.SUCCESS || code === 200) {
@@ -59,6 +64,7 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
       }
     },
     (error: Error) => {
+      onDone()
       onError?.(error)
       console.error('resError', error)
     },

@@ -7,7 +7,9 @@ import { pickWeilaData } from '../shared'
 export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
   const {
     baseURL = '/v1',
-    onError,
+    onError = noop,
+    onStart = noop,
+    onDone = noop,
     onLogout = noop,
     options = () => ({}),
   } = opts || {}
@@ -21,12 +23,14 @@ export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
     },
     mode: 'cors',
     onRequest({ options: _options }) {
+      onStart()
       _options.query = {
         ..._options.query,
         ...options(),
       }
     },
     onResponse({ response }) {
+      onDone()
       const { errcode, errmsg } = response._data as WeilaRes
 
       if (errcode === WeilaErrorCode.SUCCESS) {
@@ -43,10 +47,13 @@ export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
       }
     },
     onRequestError(reqError) {
+      onDone()
       onError?.(reqError.error)
       console.error('reqError')
     },
     onResponseError({ error, response }) {
+      onDone()
+
       if (error) {
         onError?.(error)
         console.error('resError', error)

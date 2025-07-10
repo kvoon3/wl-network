@@ -13,6 +13,8 @@ export interface WeilaRes<T = undefined> {
 export interface CreateWeilaApiOptions {
   baseURL?: string
   options?: () => Record<string, any>
+  onStart?: () => void
+  onDone?: () => void
   onError?: (error: Error | { errcode: number, errmsg: string }) => any
   onLogout?: () => void
   enableRequest?: boolean
