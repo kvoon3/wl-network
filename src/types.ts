@@ -15,6 +15,7 @@ export interface CreateWeilaApiOptions {
   options?: () => Record<string, any>
   onError?: (error: Error | { errcode: number, errmsg: string }) => any
   onLogout?: () => void
+  enableRequest?: boolean
 }
 
 export interface WeilaRequestInstance extends AxiosInstance {
