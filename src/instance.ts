@@ -24,7 +24,7 @@ export class WeilaApi {
   constructor(options?: Omit<CreateWeilaApiOptions, 'options'>) {
     const { enableRequest } = options || {}
     this.fetch = createFetch(options)
-    this.request = createRequest(options)
+    this.request = enableRequest && isBrowser ? createRequest(options) : undefined
     this.v1 = {
       fetch: createFetch({ options: v1Options, ...options }),
       request: enableRequest && isBrowser ? createRequest({ options: v1Options, ...options }) : undefined,

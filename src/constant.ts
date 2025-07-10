@@ -4,7 +4,7 @@ export enum WeilaErrorCode {
   USER_IS_NOT_REGIST_CORP = 45016,
 }
 
-export const noop = () => void 0
+export const noop = (): void => void 0
 
 export const weilaLogoutErrorCodes = [
   WeilaErrorCode.TOKEN_INVALID,
