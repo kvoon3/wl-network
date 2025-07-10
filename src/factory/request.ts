@@ -60,7 +60,7 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
 
         onError?.({ errcode, errmsg })
 
-        throw new Error(`${errcode} ${errmsg}`)
+        throw new Error(JSON.stringify({ errcode, errmsg }, null, 2))
       }
     },
     (error: Error) => {

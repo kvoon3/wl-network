@@ -29,6 +29,26 @@ export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
         ...options(),
       }
     },
+    onRequestError(reqError) {
+      onDone()
+      onError?.(reqError.error)
+      console.error('reqError')
+    },
+    onResponseError({ error, response }) {
+      onDone()
+
+      if (error) {
+        response._data = undefined
+        onError?.(error)
+        console.error('resError', error)
+      }
+      else {
+        const errcode = response.status
+        const errmsg = response.statusText
+        onError?.({ errcode, errmsg })
+        console.error('resError', errcode, errmsg)
+      }
+    },
     onResponse({ response }) {
       onDone()
       const { errcode, errmsg } = response._data as WeilaRes
@@ -39,30 +59,10 @@ export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
       else if (weilaLogoutErrorCodes.findIndex(i => errcode === i) >= 0) {
         onLogout()
       }
+      // weila error
       else {
-        if (onError)
-          onError({ errcode, errmsg })
-        else
-          throw new Error(`${errcode}: ${errmsg}`)
-      }
-    },
-    onRequestError(reqError) {
-      onDone()
-      onError?.(reqError.error)
-      console.error('reqError')
-    },
-    onResponseError({ error, response }) {
-      onDone()
-
-      if (error) {
-        onError?.(error)
-        console.error('resError', error)
-      }
-      else {
-        const errcode = response.status
-        const errmsg = response.statusText
-        onError?.({ errcode, errmsg })
-        console.error('resError', errcode, errmsg)
+        onError({ errcode, errmsg })
+        throw new Error(JSON.stringify({ errcode, errmsg }, null, 2))
       }
     },
   })
