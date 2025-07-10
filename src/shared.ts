@@ -1,9 +1,24 @@
+import type { WeilaRes } from './types'
+import { isObject, objectKeys } from '@antfu/utils'
 import md5 from 'md5'
 
 const app_id = '102036'
 const key = 'b3c658bd2e637c65efb134fb381d4a18'
 
-export function v1Options() {
+interface V1Options {
+  'app_id': string
+  'access-token': string
+  'et': string
+  'sign': string
+}
+interface V2Options {
+  appid: string
+  token: string
+  et: string
+  sign: string
+}
+
+export function v1Options(): V1Options {
   const access_token = localStorage.getItem('token') || ''
   const timestamp = Date.now() || -1
   const et = Math.floor(timestamp / 1000)
@@ -17,7 +32,7 @@ export function v1Options() {
   }
 }
 
-export function v2Options() {
+export function v2Options(): V2Options {
   const access_token = localStorage.getItem('token') || ''
   const timestamp = Date.now() || -1
   const et = Math.floor(timestamp / 1000)
@@ -32,7 +47,19 @@ export function v2Options() {
   }
 }
 
-export function getMd5Middle8Chars(md5: string) {
+export function getMd5Middle8Chars(md5: string): string {
   // 888e0f79573741ac3e1f09a3c9e46968 -> 41ac3e1f
   return md5.slice(12, 20)
+}
+
+export function pickWeilaData(weilaRes: WeilaRes): any {
+  const { data } = weilaRes
+
+  if (isObject(data)) {
+    const keys = objectKeys(data)
+    if (keys.length === 1)
+      return weilaRes.data?.[keys[0]]
+  }
+
+  return weilaRes.data
 }

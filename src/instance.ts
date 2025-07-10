@@ -1,13 +1,13 @@
-import { createFetch, createRequest } from "./factory";
-import { v1Options, v2Options } from "./shared";
-import type { CreateWeilaApiOptions } from "./types";
+import type { CreateWeilaApiOptions } from './types'
+import { isBrowser } from '@antfu/utils'
 import CryptoJS from 'crypto-js'
-import {isBrowser} from '@antfu/utils'
+import { createFetch, createRequest } from './factory'
+import { v1Options, v2Options } from './shared'
 
 export class WeilaApi {
   fetch // without extra options
   request // without extra options
-  v1 
+  v1
   v2
 
   loginTime = -1
@@ -16,7 +16,7 @@ export class WeilaApi {
   refresh_token = $local('refresh_token', 'weila-test')
   expires_in = $local('expires_in')
 
-  get isNeedRefresh() {
+  get isNeedRefresh(): boolean {
     const EXPIRES_BUFFER = 1000 * 60 * 60 * 12
     return Date.now() - this.loginTime > Number(this.expires_in) * 1000 - EXPIRES_BUFFER
   }
@@ -25,17 +25,17 @@ export class WeilaApi {
     const { enableRequest } = options || {}
     this.fetch = createFetch(options)
     this.request = createRequest(options)
-    this.v1 =  {
+    this.v1 = {
       fetch: createFetch({ options: v1Options, ...options }),
-      request: enableRequest && isBrowser ? createRequest({ options: v1Options, ...options }) : undefined
+      request: enableRequest && isBrowser ? createRequest({ options: v1Options, ...options }) : undefined,
     }
     this.v2 = {
-      fetch: createFetch({options: v2Options, ...options }),
-      request: enableRequest && isBrowser ? createRequest({ options: v2Options, ...options }) : undefined
+      fetch: createFetch({ options: v2Options, ...options }),
+      request: enableRequest && isBrowser ? createRequest({ options: v2Options, ...options }) : undefined,
     }
   }
 
-  async login(url = 'sessions/login', body: object) {
+  async login(url = 'sessions/login', body: object): Promise<any> {
     const data = await this.fetch(url, { body })
 
     if (data) {
@@ -49,37 +49,41 @@ export class WeilaApi {
     return data
   }
 
-  clear() {
+  clear(): void {
     this.token.value = ''
     this.refresh_token.value = ''
     this.expires_in.value = ''
   }
 }
 
-function $local(key: string, encodeKey?: string) {
-  const target: { value: string | undefined } = {
-    value: undefined
+interface Local {
+  value: string | undefined
+}
+
+function $local(key: string, encodeKey?: string): Local {
+  const target: Local = {
+    value: undefined,
   }
 
   return new Proxy(target, {
     get(target) {
       let value = localStorage.getItem(key) || ''
-      if(encodeKey)
+      if (encodeKey)
         value = CryptoJS.AES.encrypt(value, encodeKey).toString() || ''
 
-      if(!target.value)
+      if (!target.value)
         target.value = value
 
       return target.value
     },
     set(target, __, value: string) {
-      if(encodeKey)
+      if (encodeKey)
         value = CryptoJS.AES.encrypt(value, encodeKey).toString()
 
       localStorage.setItem(key, value)
 
       target.value = value
       return true
-    }
+    },
   })
 }

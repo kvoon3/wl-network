@@ -32,6 +32,9 @@
     "md5": "^2.3.0",
     "ofetch": "^1.4.1"
   },
+  "dependencies": {
+    "typescript": "^5.8.3"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^4.16.2",
     "@antfu/ni": "^25.0.0",
