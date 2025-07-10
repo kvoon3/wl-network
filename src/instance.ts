@@ -2,8 +2,8 @@ import { createFetch, createRequest } from "./factory";
 import { v1Options, v2Options } from "./shared";
 import type { CreateWeilaApiOptions } from "./types";
 import CryptoJS from 'crypto-js'
+import {isBrowser} from '@antfu/utils'
 
-// TODO: refresh
 export class WeilaApi {
   fetch // without extra options
   request // without extra options
@@ -26,11 +26,11 @@ export class WeilaApi {
     this.request = createRequest(options)
     this.v1 =  {
       fetch: createFetch({ options: v1Options, ...options }),
-      request: createRequest({ options: v1Options, ...options })
+      request: isBrowser ? createRequest({ options: v1Options, ...options }) : undefined
     }
     this.v2 = {
       fetch: createFetch({options: v2Options, ...options }),
-      request: createRequest({ options: v2Options, ...options })
+      request: isBrowser ? createRequest({ options: v2Options, ...options }) : undefined
     }
   }
 
