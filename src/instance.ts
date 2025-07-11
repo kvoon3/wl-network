@@ -26,12 +26,32 @@ export class WeilaApi {
     this.fetch = createFetch(options)
     this.request = enableRequest && isBrowser ? createRequest(options) : undefined
     this.v1 = {
-      fetch: createFetch({ options: v1Options, ...options }),
-      request: enableRequest && isBrowser ? createRequest({ options: v1Options, ...options }) : undefined,
+      fetch: createFetch({
+        options: v1Options,
+        ...options,
+        baseURL: 'v1',
+      }),
+      request: enableRequest && isBrowser
+        ? createRequest({
+            options: v1Options,
+            ...options,
+            baseURL: 'v1',
+          })
+        : undefined,
     }
     this.v2 = {
-      fetch: createFetch({ options: v2Options, ...options }),
-      request: enableRequest && isBrowser ? createRequest({ options: v2Options, ...options }) : undefined,
+      fetch: createFetch({
+        options: v2Options,
+        ...options,
+        baseURL: 'v2',
+      }),
+      request: enableRequest && isBrowser
+        ? createRequest({
+            options: v2Options,
+            ...options,
+            baseURL: 'v2',
+          })
+        : undefined,
     }
   }
 
