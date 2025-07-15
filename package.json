@@ -33,7 +33,7 @@
     "ofetch": "^1.4.1"
   },
   "dependencies": {
-    "typescript": "^5.8.3"
+    "unstorage": "^1.16.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.16.2",
@@ -49,7 +49,8 @@
     "ofetch": "^1.4.1",
     "simple-git-hooks": "^2.13.0",
     "taze": "^19.1.0",
-    "tsdown": "^0.12.9"
+    "tsdown": "^0.12.9",
+    "typescript": "^5.8.3"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

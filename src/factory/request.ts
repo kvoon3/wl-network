@@ -10,7 +10,7 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
     onDone = noop,
     onError = noop,
     onLogout = noop,
-    options = () => ({}),
+    query = () => ({}),
   } = opts || {}
 
   const request: WeilaRequestInstance = axios.create({
@@ -28,7 +28,7 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
       if (config) {
         config.params = {
           ...config.params,
-          ...options(),
+          ...query(),
         }
       }
       return config

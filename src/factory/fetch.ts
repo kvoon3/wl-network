@@ -11,7 +11,7 @@ export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
     onStart = noop,
     onDone = noop,
     onLogout = noop,
-    options = () => ({}),
+    query = () => ({}),
   } = opts || {}
 
   return ofetch.create({
@@ -26,7 +26,7 @@ export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
       onStart()
       _options.query = {
         ..._options.query,
-        ...options(),
+        ...query(),
       }
     },
     onRequestError(reqError) {

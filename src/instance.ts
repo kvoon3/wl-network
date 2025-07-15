@@ -2,7 +2,7 @@ import type { CreateWeilaApiOptions } from './types'
 import { isBrowser } from '@antfu/utils'
 import CryptoJS from 'crypto-js'
 import { createFetch, createRequest } from './factory'
-import { v1Options, v2Options } from './shared'
+import { v1Query, v2Query } from './shared'
 
 export class WeilaApi {
   fetch // without extra options
@@ -21,19 +21,22 @@ export class WeilaApi {
     return Date.now() - this.loginTime > Number(this.expires_in) * 1000 - EXPIRES_BUFFER
   }
 
-  constructor(options?: Omit<CreateWeilaApiOptions, 'options'>) {
-    const { enableRequest } = options || {}
+  constructor(
+    app_id: string,
+    key: string,
+    options?: Omit<CreateWeilaApiOptions, 'options'>,
+  ) {
     this.fetch = createFetch(options)
-    this.request = enableRequest && isBrowser ? createRequest(options) : undefined
+    this.request = isBrowser ? createRequest(options) : undefined
     this.v1 = {
       fetch: createFetch({
-        options: v1Options,
+        query: () => v1Query(app_id, key),
         ...options,
         baseURL: 'v1',
       }),
-      request: enableRequest && isBrowser
+      request: isBrowser
         ? createRequest({
-            options: v1Options,
+            query: () => v1Query(app_id, key),
             ...options,
             baseURL: 'v1',
           })
@@ -41,13 +44,13 @@ export class WeilaApi {
     }
     this.v2 = {
       fetch: createFetch({
-        options: v2Options,
+        query: () => v2Query(app_id, key),
         ...options,
         baseURL: 'v2',
       }),
-      request: enableRequest && isBrowser
+      request: isBrowser
         ? createRequest({
-            options: v2Options,
+            query: () => v2Query(app_id, key),
             ...options,
             baseURL: 'v2',
           })

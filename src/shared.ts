@@ -2,23 +2,20 @@ import type { WeilaRes } from './types'
 import { isObject, objectKeys } from '@antfu/utils'
 import md5 from 'md5'
 
-const app_id = '102036'
-const key = 'b3c658bd2e637c65efb134fb381d4a18'
-
-interface V1Options {
+interface V1Query {
   'app_id': string
   'access-token': string
   'et': string
   'sign': string
 }
-interface V2Options {
+interface V2Query {
   appid: string
   token: string
   et: string
   sign: string
 }
 
-export function v1Options(): V1Options {
+export function v1Query(app_id: string, key: string): V1Query {
   const access_token = localStorage.getItem('token') || ''
   const timestamp = Date.now() || -1
   const et = Math.floor(timestamp / 1000)
@@ -32,7 +29,7 @@ export function v1Options(): V1Options {
   }
 }
 
-export function v2Options(): V2Options {
+export function v2Query(app_id: string, key: string): V2Query {
   const access_token = localStorage.getItem('token') || ''
   const timestamp = Date.now() || -1
   const et = Math.floor(timestamp / 1000)
