@@ -20,5 +20,5 @@ export interface CreateWeilaApiOptions {
 }
 
 export interface WeilaRequestInstance extends AxiosInstance {
-  post: <T = any, R = WeilaRes<T>, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>) => Promise<R>
+  post: <T = any, R = T, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>) => Promise<R>
 }
