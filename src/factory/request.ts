@@ -9,7 +9,7 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
     onStart = noop,
     onDone = noop,
     onError = noop,
-    onLogout = noop,
+    onAuthError = noop,
     query = () => ({}),
   } = opts || {}
 
@@ -53,7 +53,7 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
         weilaLogoutErrorCodes
           .findIndex(i => errcode === i) >= 0
       ) {
-        onLogout()
+        onAuthError()
       }
       else {
         const { errcode, errmsg } = response.data

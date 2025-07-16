@@ -10,7 +10,7 @@ export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
     onError = noop,
     onStart = noop,
     onDone = noop,
-    onLogout = noop,
+    onAuthError = noop,
     query = () => ({}),
   } = opts || {}
 
@@ -57,7 +57,7 @@ export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
         response._data = pickWeilaData(response._data)
       }
       else if (weilaLogoutErrorCodes.findIndex(i => errcode === i) >= 0) {
-        onLogout()
+        onAuthError()
       }
       // weila error
       else {
