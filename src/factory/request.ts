@@ -49,7 +49,9 @@ export function createRequest(opts?: CreateWeilaApiOptions): HookableWeilaAxiosI
       const { errcode, code } = response.data as WeilaRes
 
       if (errcode === WeilaErrorCode.SUCCESS || code === 200) {
-        return pickWeilaData(response.data)
+        const data = pickWeilaData(response.data)
+        hooks.callHook('success', data)
+        return data
       }
       else if (
         weilaLogoutErrorCodes

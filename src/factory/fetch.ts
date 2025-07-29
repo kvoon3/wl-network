@@ -54,7 +54,9 @@ export function createFetch(opts?: CreateWeilaApiOptions): HookAbleFetch {
       const { errcode, errmsg } = response._data as WeilaRes
 
       if (errcode === WeilaErrorCode.SUCCESS) {
-        response._data = pickWeilaData(response._data)
+        const data = pickWeilaData(response._data)
+        hooks.callHook('success', data)
+        response._data = data
       }
       else if (weilaLogoutErrorCodes.findIndex(i => errcode === i) >= 0) {
         hooks.callHook('auth:error')
