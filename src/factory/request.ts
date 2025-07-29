@@ -1,11 +1,11 @@
 import type { Hookable } from 'hookable'
-import type { CreateWeilaApiOptions, WeilaRequestInstance, WeilaRes } from '../types'
+import type { CreateWeilaApiOptions, WeilaHooks, WeilaRequestInstance, WeilaRes } from '../types'
 import axios from 'axios'
 import { createHooks } from 'hookable'
 import { WeilaErrorCode, weilaLogoutErrorCodes } from '../constant'
 import { pickWeilaData } from '../shared'
 
-export interface HookableWeilaAxiosInstance extends WeilaRequestInstance, Hookable {
+export interface HookableWeilaAxiosInstance extends WeilaRequestInstance, Hookable<WeilaHooks> {
 
 }
 

@@ -15,12 +15,16 @@ export interface CreateWeilaApiOptions {
   baseURL?: string
   query?: () => Record<string, any>
   hooks?: Hookable
-  // onStart?: () => void
-  // onDone?: () => void
-  // onError?: (error: Error | { errcode: number, errmsg: string }) => any
-  // onAuthError?: () => void
 }
 
 export interface WeilaRequestInstance extends AxiosInstance {
   post: <T = any, R = T, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>) => Promise<R>
+}
+
+export interface WeilaHooks {
+  'request:prepare': () => void
+  'request:error': (error: Error) => void
+  'response:error': (error: Error) => void
+  'auth:error': () => void
+  'done': () => void
 }

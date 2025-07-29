@@ -1,12 +1,12 @@
 import type { Hookable } from 'hookable'
 import type { $Fetch } from 'ofetch'
-import type { CreateWeilaApiOptions, WeilaRes } from '../types'
+import type { CreateWeilaApiOptions, WeilaHooks, WeilaRes } from '../types'
 import { createHooks } from 'hookable'
 import { ofetch } from 'ofetch'
 import { WeilaErrorCode, weilaLogoutErrorCodes } from '../constant'
 import { pickWeilaData } from '../shared'
 
-export interface HookAbleFetch extends $Fetch, Hookable {
+export interface HookAbleFetch extends $Fetch, Hookable<WeilaHooks> {
 
 }
 
