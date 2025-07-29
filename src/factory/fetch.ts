@@ -1,20 +1,22 @@
+import type { Hookable } from 'hookable'
 import type { $Fetch } from 'ofetch'
 import type { CreateWeilaApiOptions, WeilaRes } from '../types'
+import { createHooks } from 'hookable'
 import { ofetch } from 'ofetch'
-import { noop, WeilaErrorCode, weilaLogoutErrorCodes } from '../constant'
+import { WeilaErrorCode, weilaLogoutErrorCodes } from '../constant'
 import { pickWeilaData } from '../shared'
 
-export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
+export interface HookAbleFetch extends $Fetch, Hookable {
+
+}
+
+export function createFetch(opts?: CreateWeilaApiOptions): HookAbleFetch {
   const {
     baseURL = '/v1',
-    onError = noop,
-    onStart = noop,
-    onDone = noop,
-    onAuthError = noop,
+    hooks = createHooks(),
     query = () => ({}),
   } = opts || {}
-
-  return ofetch.create({
+  const instance = ofetch.create({
     baseURL,
     timeout: 20 * 1000,
     method: 'POST',
@@ -23,47 +25,49 @@ export function createFetch(opts?: CreateWeilaApiOptions): $Fetch {
     },
     mode: 'cors',
     onRequest({ options: _options }) {
-      onStart()
+      hooks.callHook('request:prepare')
       _options.query = {
         ..._options.query,
         ...query(),
       }
     },
     onRequestError(reqError) {
-      onDone()
-      onError?.(reqError.error)
-      console.error('reqError')
+      hooks.callHook('request:error', reqError.error)
+      hooks.callHook('done')
     },
     onResponseError({ error, response }) {
-      onDone()
+      hooks.callHook('done')
 
       if (error) {
         response._data = undefined
-        onError?.(error)
-        console.error('resError', error)
+        hooks.callHook('response:error', error)
       }
       else {
         const errcode = response.status
         const errmsg = response.statusText
-        onError?.({ errcode, errmsg })
-        console.error('resError', errcode, errmsg)
+
+        hooks.callHook('response:error', { errcode, errmsg })
       }
     },
     onResponse({ response }) {
-      onDone()
+      hooks.callHook('done')
       const { errcode, errmsg } = response._data as WeilaRes
 
       if (errcode === WeilaErrorCode.SUCCESS) {
         response._data = pickWeilaData(response._data)
       }
       else if (weilaLogoutErrorCodes.findIndex(i => errcode === i) >= 0) {
-        onAuthError()
+        hooks.callHook('auth:error')
       }
       // weila error
       else {
-        onError({ errcode, errmsg })
+        hooks.callHook('response:error', { errcode, errmsg })
         throw new Error(JSON.stringify({ errcode, errmsg }, null, 2))
       }
     },
   })
+
+  Object.assign(instance, hooks)
+
+  return instance as HookAbleFetch
 }

@@ -1,5 +1,5 @@
 export * from './constant'
 export * from './factory/fetch'
-export * from './instance'
 export * from './shared'
 export * from './types'
+export * from './weila'

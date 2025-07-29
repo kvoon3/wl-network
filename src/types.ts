@@ -1,4 +1,5 @@
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
+import type { Hookable } from 'hookable'
 
 export interface WeilaRes<T = undefined> {
   data?: T
@@ -13,10 +14,11 @@ export interface WeilaRes<T = undefined> {
 export interface CreateWeilaApiOptions {
   baseURL?: string
   query?: () => Record<string, any>
-  onStart?: () => void
-  onDone?: () => void
-  onError?: (error: Error | { errcode: number, errmsg: string }) => any
-  onAuthError?: () => void
+  hooks?: Hookable
+  // onStart?: () => void
+  // onDone?: () => void
+  // onError?: (error: Error | { errcode: number, errmsg: string }) => any
+  // onAuthError?: () => void
 }
 
 export interface WeilaRequestInstance extends AxiosInstance {

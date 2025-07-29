@@ -33,6 +33,7 @@
     "ofetch": "^1.4.1"
   },
   "dependencies": {
+    "hookable": "^5.5.3",
     "unstorage": "^1.16.0"
   },
   "devDependencies": {

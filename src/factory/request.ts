@@ -1,19 +1,22 @@
+import type { Hookable } from 'hookable'
 import type { CreateWeilaApiOptions, WeilaRequestInstance, WeilaRes } from '../types'
 import axios from 'axios'
-import { noop, WeilaErrorCode, weilaLogoutErrorCodes } from '../constant'
+import { createHooks } from 'hookable'
+import { WeilaErrorCode, weilaLogoutErrorCodes } from '../constant'
 import { pickWeilaData } from '../shared'
 
-export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstance {
+export interface HookableWeilaAxiosInstance extends WeilaRequestInstance, Hookable {
+
+}
+
+export function createRequest(opts?: CreateWeilaApiOptions): HookableWeilaAxiosInstance {
   const {
     baseURL = '/v1',
-    onStart = noop,
-    onDone = noop,
-    onError = noop,
-    onAuthError = noop,
+    hooks = createHooks(),
     query = () => ({}),
   } = opts || {}
 
-  const request: WeilaRequestInstance = axios.create({
+  const instance: WeilaRequestInstance = axios.create({
     baseURL,
     timeout: 20 * 1000,
     method: 'POST',
@@ -22,9 +25,9 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
     },
   })
 
-  request.interceptors.request.use(
+  instance.interceptors.request.use(
     (config) => {
-      onStart()
+      hooks.callHook('request:prepare')
       if (config) {
         config.params = {
           ...config.params,
@@ -34,16 +37,15 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
       return config
     },
     (error) => {
-      onDone()
-      onError?.(error)
-      console.error('reqError', error)
+      hooks.callHook('done')
+      hooks.callHook('request:error', error)
     },
   )
 
-  request.interceptors.response.use(
+  instance.interceptors.response.use(
     // @ts-expect-error type error
     (response: AxiosResponse<WeilaRes>) => {
-      onDone()
+      hooks.callHook('done')
       const { errcode, code } = response.data as WeilaRes
 
       if (errcode === WeilaErrorCode.SUCCESS || code === 200) {
@@ -53,22 +55,23 @@ export function createRequest(opts?: CreateWeilaApiOptions): WeilaRequestInstanc
         weilaLogoutErrorCodes
           .findIndex(i => errcode === i) >= 0
       ) {
-        onAuthError()
+        hooks.callHook('auth:error')
       }
       else {
         const { errcode, errmsg } = response.data
 
-        onError?.({ errcode, errmsg })
+        hooks.callHook('response:error', { errcode, errmsg })
 
         throw new Error(JSON.stringify({ errcode, errmsg }, null, 2))
       }
     },
     (error: Error) => {
-      onDone()
-      onError?.(error)
-      console.error('resError', error)
+      hooks.callHook('done')
+      hooks.callHook('response:error', error)
     },
   )
 
-  return request
+  Object.assign(instance, hooks)
+
+  return instance as HookableWeilaAxiosInstance
 }
