@@ -1,7 +1,9 @@
 import type { HookAbleFetch, HookableWeilaAxiosInstance } from './factory'
 import type { CreateWeilaApiOptions } from './types'
 import { Hookable } from 'hookable'
+import { parseURL } from 'ufo'
 import { createFetch, createRequest } from './factory'
+
 import { v1Query, v2Query } from './shared'
 
 export class WeilaApi extends Hookable {
@@ -34,7 +36,7 @@ export class WeilaApi extends Hookable {
         hooks: this,
         query: () => v1Query(app_id, key),
         ...options,
-        baseURL: 'v1',
+        baseURL: `${getRootUrl(window.location.href)}/v1`,
       }),
       request: createRequest({
         hooks: this,
@@ -48,7 +50,7 @@ export class WeilaApi extends Hookable {
         hooks: this,
         query: () => v2Query(app_id, key),
         ...options,
-        baseURL: 'v2',
+        baseURL: `${getRootUrl(window.location.href)}/v2`,
       }),
       request: createRequest({
         hooks: this,
@@ -58,4 +60,10 @@ export class WeilaApi extends Hookable {
       }),
     }
   }
+}
+
+function getRootUrl(url: string): string {
+  const parsed = parseURL(url)
+
+  return `${parsed.protocol}//${parsed.host?.split('/')[0] || ''}`
 }
