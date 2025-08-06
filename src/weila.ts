@@ -42,7 +42,7 @@ export class WeilaApi extends Hookable {
         hooks: this,
         query: () => v1Query(app_id, key),
         ...options,
-        baseURL: 'v1',
+        baseURL: `${getRootUrl(window.location.href)}/v1`,
       }),
     }
     this.v2 = {
@@ -56,7 +56,7 @@ export class WeilaApi extends Hookable {
         hooks: this,
         query: () => v2Query(app_id, key),
         ...options,
-        baseURL: 'v2',
+        baseURL: `${getRootUrl(window.location.href)}/v2`,
       }),
     }
   }
