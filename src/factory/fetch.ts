@@ -60,6 +60,7 @@ export function createFetch(opts?: CreateWeilaApiOptions): HookAbleFetch {
       }
       else if (weilaLogoutErrorCodes.findIndex(i => errcode === i) >= 0) {
         hooks.callHook('auth:error')
+        throw new Error('logout')
       }
       // weila error
       else {
