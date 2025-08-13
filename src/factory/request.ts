@@ -26,8 +26,8 @@ export function createRequest(opts?: CreateWeilaApiOptions): HookableWeilaAxiosI
   })
 
   instance.interceptors.request.use(
-    (config) => {
-      hooks.callHook('request:prepare')
+    async (config) => {
+      await hooks.callHook('request:prepare')
       if (config) {
         config.params = {
           ...config.params,
@@ -36,40 +36,40 @@ export function createRequest(opts?: CreateWeilaApiOptions): HookableWeilaAxiosI
       }
       return config
     },
-    (error) => {
-      hooks.callHook('done')
-      hooks.callHook('request:error', error)
+    async (error) => {
+      await hooks.callHook('done')
+      await hooks.callHook('request:error', error)
     },
   )
 
   instance.interceptors.response.use(
     // @ts-expect-error type error
-    (response: AxiosResponse<WeilaRes>) => {
-      hooks.callHook('done')
+    async (response: AxiosResponse<WeilaRes>) => {
+      await hooks.callHook('done')
       const { errcode, code } = response.data as WeilaRes
 
       if (errcode === WeilaErrorCode.SUCCESS || code === 200) {
         const data = pickWeilaData(response.data)
-        hooks.callHook('success', data)
+        await hooks.callHook('success', data)
         return data
       }
       else if (
         weilaLogoutErrorCodes
           .findIndex(i => errcode === i) >= 0
       ) {
-        hooks.callHook('auth:error')
+        await hooks.callHook('auth:error')
       }
       else {
         const { errcode, errmsg } = response.data
 
-        hooks.callHook('response:error', { errcode, errmsg })
+        await hooks.callHook('response:error', { errcode, errmsg })
 
         throw new Error(JSON.stringify({ errcode, errmsg }, null, 2))
       }
     },
-    (error: Error) => {
-      hooks.callHook('done')
-      hooks.callHook('response:error', error)
+    async (error: Error) => {
+      await hooks.callHook('done')
+      await hooks.callHook('response:error', error)
     },
   )
 

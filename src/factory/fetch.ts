@@ -24,47 +24,47 @@ export function createFetch(opts?: CreateWeilaApiOptions): HookAbleFetch {
       'Content-Type': 'application/json',
     },
     mode: 'cors',
-    onRequest({ options: _options }) {
-      hooks.callHook('request:prepare')
+    async onRequest({ options: _options }) {
+      await hooks.callHook('request:prepare')
       _options.query = {
         ..._options.query,
         ...query(),
       }
     },
-    onRequestError(reqError) {
-      hooks.callHook('request:error', reqError.error)
-      hooks.callHook('done')
+    async onRequestError(reqError) {
+      await hooks.callHook('request:error', reqError.error)
+      await hooks.callHook('done')
     },
-    onResponseError({ error, response }) {
-      hooks.callHook('done')
+    async onResponseError({ error, response }) {
+      await hooks.callHook('done')
 
       if (error) {
         response._data = undefined
-        hooks.callHook('response:error', error)
+        await hooks.callHook('response:error', error)
       }
       else {
         const errcode = response.status
         const errmsg = response.statusText
 
-        hooks.callHook('response:error', { errcode, errmsg })
+        await hooks.callHook('response:error', { errcode, errmsg })
       }
     },
-    onResponse({ response }) {
-      hooks.callHook('done')
+    async onResponse({ response }) {
+      await hooks.callHook('done')
       const { errcode, errmsg } = response._data as WeilaRes
 
       if (errcode === WeilaErrorCode.SUCCESS) {
         const data = pickWeilaData(response._data)
-        hooks.callHook('success', data)
+        await hooks.callHook('success', data)
         response._data = data
       }
       else if (weilaLogoutErrorCodes.findIndex(i => errcode === i) >= 0) {
-        hooks.callHook('auth:error')
+        await hooks.callHook('auth:error')
         throw new Error('logout')
       }
       // weila error
       else {
-        hooks.callHook('response:error', { errcode, errmsg })
+        await hooks.callHook('response:error', { errcode, errmsg })
         throw new Error(JSON.stringify({ errcode, errmsg }, null, 2))
       }
     },
