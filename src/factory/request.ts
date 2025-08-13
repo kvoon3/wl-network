@@ -27,7 +27,7 @@ export function createRequest(opts?: CreateWeilaApiOptions): HookableWeilaAxiosI
 
   instance.interceptors.request.use(
     async (config) => {
-      await hooks.callHook('request:prepare')
+      await hooks.callHook('request:prepare', config)
       if (config) {
         config.params = {
           ...config.params,

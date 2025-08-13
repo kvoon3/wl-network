@@ -24,8 +24,9 @@ export function createFetch(opts?: CreateWeilaApiOptions): HookAbleFetch {
       'Content-Type': 'application/json',
     },
     mode: 'cors',
-    async onRequest({ options: _options }) {
-      await hooks.callHook('request:prepare')
+    async onRequest(ctx) {
+      const { options: _options } = ctx
+      await hooks.callHook('request:prepare', ctx)
       _options.query = {
         ..._options.query,
         ...query(),
