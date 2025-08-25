@@ -1,7 +1,7 @@
 import type { HookAbleFetch, HookableWeilaAxiosInstance } from './factory'
 import type { CreateWeilaApiOptions } from './types'
+import { getRootUrl } from '@kvoon/utils'
 import { Hookable } from 'hookable'
-import { parseURL } from 'ufo'
 import { createFetch, createRequest } from './factory'
 
 import { v1Query, v2Query } from './shared'
@@ -60,10 +60,4 @@ export class WeilaApi extends Hookable {
       }),
     }
   }
-}
-
-function getRootUrl(url: string): string {
-  const parsed = parseURL(url)
-
-  return `${parsed.protocol}//${parsed.host?.split('/')[0] || ''}`
 }
