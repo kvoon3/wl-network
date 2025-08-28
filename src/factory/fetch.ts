@@ -36,19 +36,10 @@ export function createFetch(opts?: CreateWeilaApiOptions): HookAbleFetch {
       await hooks.callHook('request:error', reqError.error)
       await hooks.callHook('done')
     },
-    async onResponseError({ error, response }) {
+    async onResponseError(ctx) {
       await hooks.callHook('done')
 
-      if (error) {
-        response._data = undefined
-        await hooks.callHook('response:error', error)
-      }
-      else {
-        const errcode = response.status
-        const errmsg = response.statusText
-
-        await hooks.callHook('response:error', { errcode, errmsg })
-      }
+      await hooks.callHook('response:error', ctx)
     },
     async onResponse({ response }) {
       await hooks.callHook('done')
