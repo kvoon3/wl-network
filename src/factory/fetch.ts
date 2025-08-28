@@ -41,9 +41,14 @@ export function createFetch(opts?: CreateWeilaApiOptions): HookAbleFetch {
 
       await hooks.callHook('response:error', ctx)
     },
-    async onResponse({ response }) {
+    async onResponse(ctx) {
+      const { response } = ctx
       await hooks.callHook('done')
       const { errcode, errmsg } = response._data as WeilaRes
+
+      if (!response.ok) {
+        throw ctx
+      }
 
       if (errcode === WeilaErrorCode.SUCCESS) {
         const data = pickWeilaData(response._data)
@@ -56,7 +61,6 @@ export function createFetch(opts?: CreateWeilaApiOptions): HookAbleFetch {
       }
       // weila error
       else {
-        await hooks.callHook('response:error', { errcode, errmsg })
         throw new Error(JSON.stringify({ errcode, errmsg }, null, 2))
       }
     },
