@@ -53,18 +53,14 @@ export function createRequest(opts?: CreateWeilaApiOptions): HookableWeilaAxiosI
         await hooks.callHook('success', data)
         return data
       }
-      else if (
-        weilaLogoutErrorCodes
-          .findIndex(i => errcode === i) >= 0
-      ) {
+      else if (weilaLogoutErrorCodes.findIndex(i => errcode === i) >= 0) {
         await hooks.callHook('auth:error')
       }
+      // weila error
       else {
         const { errcode, errmsg } = response.data
 
         await hooks.callHook('response:error', { errcode, errmsg })
-
-        throw new Error(JSON.stringify({ errcode, errmsg }, null, 2))
       }
     },
     async (error: Error) => {

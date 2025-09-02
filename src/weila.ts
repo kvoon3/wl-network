@@ -61,3 +61,7 @@ export class WeilaApi extends Hookable {
     }
   }
 }
+
+export function isWeilaRes(res: object): boolean {
+  return 'errcode' in res && 'errmsg' in res
+}
