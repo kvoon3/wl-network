@@ -1,6 +1,7 @@
 import type { WeilaRes } from './types'
 import { isObject, objectKeys } from '@antfu/utils'
 import md5 from 'md5'
+import { nanoid } from 'nanoid'
 
 interface V1Query {
   'app_id': string
@@ -14,6 +15,7 @@ interface V2Query {
   token?: string
   et: string
   sign: string
+  uuid: string
 }
 
 export function v1Query(app_id: string, key: string): V1Query {
@@ -35,16 +37,24 @@ export function v1Query(app_id: string, key: string): V1Query {
   return res
 }
 
-export function v2Query(app_id: string, key: string): V2Query {
+export function v2Query(app_id: string, key: string, appName: string): V2Query {
   const timestamp = Date.now() || -1
   const et = Math.floor(timestamp / 1000)
   const app_sign = md5(`${et}${key}`)
   const app_sign_v2 = getMd5Middle8Chars(app_sign)
 
+  const uuidKey = `${appName}_uuid`
+  let uuid = localStorage.getItem(uuidKey)
+  if (!uuid) {
+    uuid = nanoid()
+    localStorage.setItem(uuidKey, uuid)
+  }
+
   const res: V2Query = {
     appid: app_id,
     et: String(et),
     sign: app_sign_v2,
+    uuid,
   }
 
   const token = localStorage.getItem('token')
