@@ -15,6 +15,7 @@ export class WeilaApi extends Hookable {
   loginTime = -1
 
   constructor(
+    app_name: string,
     app_id: string,
     key: string,
     options?: Omit<CreateWeilaApiOptions, 'options'>,
@@ -34,13 +35,13 @@ export class WeilaApi extends Hookable {
     this.v1 = {
       fetch: createFetch({
         hooks: this,
-        query: () => v1Query(app_id, key),
+        query: () => v1Query(app_name, app_id, key),
         ...options,
         baseURL: `${getRootUrl(window.location.href)}/v1`,
       }),
       request: createRequest({
         hooks: this,
-        query: () => v1Query(app_id, key),
+        query: () => v1Query(app_name, app_id, key),
         ...options,
         baseURL: `${getRootUrl(window.location.href)}/v1`,
       }),
@@ -48,13 +49,13 @@ export class WeilaApi extends Hookable {
     this.v2 = {
       fetch: createFetch({
         hooks: this,
-        query: () => v2Query(app_id, key),
+        query: () => v2Query(app_name, app_id, key),
         ...options,
         baseURL: `${getRootUrl(window.location.href)}/v2`,
       }),
       request: createRequest({
         hooks: this,
-        query: () => v2Query(app_id, key),
+        query: () => v2Query(app_name, app_id, key),
         ...options,
         baseURL: `${getRootUrl(window.location.href)}/v2`,
       }),

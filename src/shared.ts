@@ -8,6 +8,7 @@ interface V1Query {
   'access-token'?: string
   'et': string
   'sign': string
+  'uuid': string
 }
 
 interface V2Query {
@@ -18,15 +19,17 @@ interface V2Query {
   uuid: string
 }
 
-export function v1Query(app_id: string, key: string): V1Query {
+export function v1Query(appName: string, app_id: string, key: string): V1Query {
   const timestamp = Date.now() || -1
   const et = Math.floor(timestamp / 1000)
   const app_sign = md5(`${et}${key}`)
+  const uuid = getOrCreateUuid(appName)
 
   const res: V1Query = {
     app_id,
     et: String(et),
     sign: app_sign,
+    uuid,
   }
 
   const access_token = localStorage.getItem('token')
@@ -37,18 +40,12 @@ export function v1Query(app_id: string, key: string): V1Query {
   return res
 }
 
-export function v2Query(app_id: string, key: string, appName: string): V2Query {
+export function v2Query(appName: string, app_id: string, key: string): V2Query {
   const timestamp = Date.now() || -1
   const et = Math.floor(timestamp / 1000)
   const app_sign = md5(`${et}${key}`)
   const app_sign_v2 = getMd5Middle8Chars(app_sign)
-
-  const uuidKey = `${appName}_uuid`
-  let uuid = localStorage.getItem(uuidKey)
-  if (!uuid) {
-    uuid = nanoid()
-    localStorage.setItem(uuidKey, uuid)
-  }
+  const uuid = getOrCreateUuid(appName)
 
   const res: V2Query = {
     appid: app_id,
@@ -68,6 +65,16 @@ export function v2Query(app_id: string, key: string, appName: string): V2Query {
 export function getMd5Middle8Chars(md5: string): string {
   // 888e0f79573741ac3e1f09a3c9e46968 -> 41ac3e1f
   return md5.slice(12, 20)
+}
+
+export function getOrCreateUuid(appName: string): string {
+  const uuidKey = `__${appName}-uuid__`
+  let uuid = localStorage.getItem(uuidKey)
+  if (!uuid) {
+    uuid = nanoid()
+    localStorage.setItem(uuidKey, uuid)
+  }
+  return uuid
 }
 
 export function pickWeilaData(weilaRes: WeilaRes): any {
